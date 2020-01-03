@@ -38,6 +38,10 @@ tar zxf apache-maven-$VERSION-bin.tar.gz
 assert_status
 rm -f apache-maven-$VERSION-bin.tar.gz
 assert_status
+check_directory /usr/share/maven-3
+if [[ $? -eq 1 ]]; then
+	rm -rf /usr/share/maven-3
+fi
 mv apache-maven-$VERSION /usr/share/maven-3
 assert_status
 echo 'MAVEN_HOME=/usr/share/maven-3' >> /etc/profile
