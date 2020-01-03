@@ -10,6 +10,7 @@ mkdir -p /data/middleware/nginx/logs
 assert_status
 assert_docker_container nginx
 cp nginx/index.html /data/middleware/nginx/www
+cp conf/index.conf  /data/middleware/nginx/conf
 
 cd nginx
 docker build -t mynginx .
@@ -20,6 +21,7 @@ docker run -d -P \
   -v /data/middleware/nginx/www:/usr/share/nginx/html:ro \
   -v /data/middleware/nginx/conf:/etc/nginx/conf.d:ro \
   -v /data/middleware/nginx/logs:/var/log/nginx \
+  --restart=always \
   --name nginx \
   mynginx
 assert_status
