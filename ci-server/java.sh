@@ -1,4 +1,4 @@
-#! /bin/sh
+#!/bin/bash
 
 source ./init-helper.sh
 assert_command_exist java -version
@@ -11,4 +11,3 @@ echo 'PATH=$PATH:$JAVA_HOME/bin' >> /etc/profile
 assert_status
 
 source /etc/profile
-source /$(whoami)/.bashrc

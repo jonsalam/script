@@ -1,4 +1,4 @@
-#! /bin/sh
+#!/bin/bash
 
 # ignore files: init.sh, init-helper.sh
 
@@ -22,7 +22,7 @@ for FILE in $FILES; do
 	FILE_NAME=$(echo $FILE |awk -F '/' '{print $NF}' |awk -F '.' '{print $1}')
 	echo "--- ${i}/${count} $FILE_NAME installing ---"
 	# execute install shell
-	install $FILE
+	source $FILE
 	if [[ $? -eq 0 ]]; then
 		echo "--- $FILE_NAME installed ---"
 	fi

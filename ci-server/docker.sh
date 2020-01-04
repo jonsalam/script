@@ -1,4 +1,4 @@
-#! /bin/sh
+#!/bin/bash
 
 source ./init-helper.sh
 assert_command_exist docker -v
