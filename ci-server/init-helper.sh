@@ -1,6 +1,7 @@
 #!/bin/bash
 
 function assert_command_exist {
+	source /etc/profile
 	if command -v $1 > /dev/null; then
 		echo "$1 has already been installed"
 		$1 $2
