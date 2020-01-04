@@ -22,7 +22,7 @@ for FILE in $FILES; do
 	FILE_NAME=$(echo $FILE |awk -F '/' '{print $NF}' |awk -F '.' '{print $1}')
 	echo "--- ${i}/${count} $FILE_NAME installing ---"
 	# execute install shell
-	source $FILE
+	bash $FILE
 	if [[ $? -eq 0 ]]; then
 		echo "--- $FILE_NAME installed ---"
 	fi
