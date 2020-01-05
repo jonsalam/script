@@ -50,5 +50,3 @@ echo 'PATH=$PATH:$MAVEN_HOME/bin' >> /etc/profile
 assert_status
 source /etc/profile
 assert_status
-
-echo "--- maven installed ---"
