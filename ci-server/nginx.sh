@@ -4,13 +4,11 @@ source ./init-helper.sh
 
 install docker.sh
 
-mkdir -p /data/middleware/nginx/www
-mkdir -p /data/middleware/nginx/conf
-mkdir -p /data/middleware/nginx/logs
+mkdir -p /data/middleware/nginx/{www,conf,logs}
 assert_status
 assert_docker_container nginx
 cp nginx/index.html /data/middleware/nginx/www
-cp nginx/index.conf  /data/middleware/nginx/conf
+cp nginx/index.conf /data/middleware/nginx/conf
 
 cd nginx
 docker build -t mynginx .
