@@ -40,7 +40,7 @@ docker run -d \
   jenkins/jenkins:lts
 
 # wait jenkins started
-wait_docker_container 'Jenkins initial setup is required'
+wait_docker_container 'Running from: /usr/share/jenkins/jenkins.war'
 initialAdminPassword=$(cat /data/app/jenkins/secrets/initialAdminPassword)
 # ssh
 docker exec -it jenkins \
