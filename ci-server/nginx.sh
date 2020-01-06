@@ -7,8 +7,9 @@ install docker.sh
 mkdir -p /data/app/nginx/{www,conf,logs}
 assert_status
 assert_docker_container nginx
-cp nginx/index.html /data/app/nginx/www
-cp nginx/index.conf /data/app/nginx/conf
+cp nginx/index.html  /data/app/nginx/www
+cp nginx/favicon.ico /data/app/nginx/www
+cp nginx/index.conf  /data/app/nginx/conf
 
 cd nginx
 docker build -t mynginx .
