@@ -1,9 +1,7 @@
 #!/bin/bash
 
 # fallback
-# docker rm -f jenkins
-# rm -rf /data/app/jenkins
-# userdel jenkins
+# docker rm -f jenkins && rm -rf /data/app/jenkins && userdel jenkins
 
 source ./init-helper.sh
 assert_docker_container jenkins
@@ -40,8 +38,9 @@ docker run -d \
   jenkins/jenkins:lts
 
 # wait jenkins started
-while; do
-  if [[ docker logs jenkins 2>&1 |grep -q 'Completed initialization' ]]; then
+while true; do
+  status=$(docker logs jenkins 2>&1 |grep 'Completed initialization')
+  if [[ $status -eq 0 ]]; then
     echo 'Completed initialization'
     break
   else
