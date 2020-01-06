@@ -52,10 +52,6 @@ function while_read_line {
 		echo $line |grep "$1"
 		if [[ $? -eq 0 ]]; then
 			break
-		fi;
+		fi
 	done
-}
-
-function wait_docker_container {
-	docker logs -f jenkins |while_read_line "$1"
 }

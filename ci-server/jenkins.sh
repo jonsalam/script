@@ -40,7 +40,14 @@ docker run -d \
   jenkins/jenkins:lts
 
 # wait jenkins started
-wait_docker_container 'Running from: /usr/share/jenkins/jenkins.war'
+while; do
+  if [[ docker logs jenkins 2>&1 |grep -q 'Completed initialization' ]]; then
+    echo 'Completed initialization'
+    break
+  else
+    sleep 1
+  fi
+done
 initialAdminPassword=$(cat /data/app/jenkins/secrets/initialAdminPassword)
 # ssh
 docker exec -it jenkins \
