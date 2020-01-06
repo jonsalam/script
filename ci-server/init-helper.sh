@@ -49,12 +49,13 @@ function check_directory {
 function while_read_line {
 	while read line; do
 		echo $line
-		if [[ $(echo $line |grep $1) -eq 0 ]]; then
+		echo $line |grep $1
+		if [[ $? -eq 0 ]]; then
 			break
 		fi;
 	done
 }
 
 function wait_docker_container {
-	docker logs -f jenkins | while_read_line
+	docker logs -f jenkins |while_read_line $1
 }
