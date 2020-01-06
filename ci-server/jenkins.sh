@@ -23,6 +23,9 @@ gpasswd -a jenkins docker
 mkdir -p /data/app/jenkins
 chown jenkins:docker /data/app/jenkins
 
+cd nginx
+docker build -t myjenkins .
+
 docker run -d \
   -u root \
   -p 8000:8080 \
@@ -34,26 +37,11 @@ docker run -d \
   --env PATH=/usr/share/maven-3/bin:/usr/local/openjdk-8/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin \
   -v /var/run/docker.sock:/var/run/docker.sock \
   -v /usr/bin/docker:/usr/bin/docker \
+  --log-driver json-file \
+  --log-opt max-size=10m \
+  --log-opt max-file=3 \
   --name jenkins \
-  jenkins/jenkins:lts
-
-# wait jenkins started
-while true; do
-  status=$(docker logs jenkins 2>&1 |grep 'Completed initialization')
-  if [[ $status -eq 0 ]]; then
-    echo 'Completed initialization'
-    break
-  else
-    sleep 1
-  fi
-done
-initialAdminPassword=$(cat /data/app/jenkins/secrets/initialAdminPassword)
-# ssh
-docker exec -it jenkins \
-  mkdir -p /var/jenkins_home/.ssh && \
-  ssh-keygen -q -t rsa -N '' -f /var/jenkins_home/.ssh/id_rsa && \
-  ssh-copy-id -i /var/jenkins_home/.ssh/id_rsa.pub jenkins@62.234.82.69 && \
-  ssh -i /var/jenkins_home/.ssh/id_rsa jenkins@62.234.82.69
+  myjenkins
 
 cp jenkins/jenkins.conf /data/app/nginx/
 docker exec -it nginx service nginx reload
