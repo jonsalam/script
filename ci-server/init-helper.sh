@@ -19,7 +19,7 @@ function assert_status {
 function assert_docker_container {
 	status=$(docker ps -a --filter name=$1 --format "table {{.Status}}\t{{.ID}}" |sed -n '2p' |awk '{print $1}')
 	if [[ -n $status ]]; then
-		echo "$1 has already been installed, status: $status"
+		echo "$1 already installed, status: $status"
 		if [[ "$status" != "Up" ]]; then
 			docker start $1
 			assert_status
@@ -44,4 +44,17 @@ function check_directory {
     else
         return 0
     fi
+}
+
+function while_read_line {
+	while read line; do
+		echo $line
+		if [[ $(echo $line |grep $1) -eq 0 ]]; then
+			break
+		fi;
+	done
+}
+
+function wait_docker_container {
+	docker logs -f jenkins | while_read_line
 }

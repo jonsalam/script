@@ -32,11 +32,14 @@ VERSION=$(curl -s http://mirror.bit.edu.cn/apache/maven/maven-3/ --compressed \
 assert_status
 echo "--- maven lastest version is $VERSION ---"
 
-mkdir -p /data/middleware/maven/repository
+mkdir -p /data/app/maven/repository
+chmod 777 /data/app/maven/repository
+cp maven/settings.xml /data/app/maven/
+
 curl -O "http://mirror.bit.edu.cn/apache/maven/maven-3/$VERSION/binaries/apache-maven-$VERSION-bin.tar.gz"
 assert_status
 tar zxf apache-maven-$VERSION-bin.tar.gz
-cp maven.xml apache-maven-$VERSION/conf/settings.xml
+cp maven/settings.xml apache-maven-$VERSION/conf/settings.xml
 assert_status
 rm -f apache-maven-$VERSION-bin.tar.gz
 assert_status
