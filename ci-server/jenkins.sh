@@ -1,7 +1,11 @@
 #!/bin/bash
 
-source ./init-helper.sh
+# fallback
+# docker rm -f jenkins
+# rm -rf /data/app/jenkins
+# userdel jenkins
 
+source ./init-helper.sh
 assert_docker_container jenkins
 
 # requirements
@@ -43,7 +47,7 @@ docker exec -it jenkins \
   mkdir -p /var/jenkins_home/.ssh && \
   ssh-keygen -q -t rsa -N '' -f /var/jenkins_home/.ssh/id_rsa && \
   ssh-copy-id -i /var/jenkins_home/.ssh/id_rsa.pub jenkins@62.234.82.69 && \
-  ssh -i $JENKINS_HOME/.ssh/id_rsa jenkins@62.234.82.69
+  ssh -i /var/jenkins_home/.ssh/id_rsa jenkins@62.234.82.69
 
 cp jenkins/jenkins.conf /data/app/nginx/
 docker exec -it nginx service nginx reload
