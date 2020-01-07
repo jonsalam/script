@@ -42,3 +42,17 @@ docker run -d \
 
 cp jenkins/jenkins.conf /data/app/nginx/
 docker exec -it nginx service nginx reload
+
+# 987d829a31114b32a1d0d1e4484b33e6
+password=$(cat /data/app/jenkins/secrets/initialAdminPassword)
+
+echo 'wait Completed initialization'
+while true; do
+  status=$(curl -s -I -o /dev/null -w %{http_code} http://jenkins.gffst.cn/login\?from\=%2F)
+  if [[ $status -eq 200 ]]; then
+    echo 'Completed initialization'
+    break
+  else
+    sleep 3
+  fi
+done
