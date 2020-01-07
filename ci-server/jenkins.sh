@@ -24,6 +24,7 @@ mkdir -p /data/app/jenkins
 chown jenkins:docker /data/app/jenkins
 
 cd jenkins
+docker rm -f myjenkins
 docker build -t myjenkins .
 
 docker run -d \

@@ -11,6 +11,7 @@ cp nginx/index.html  /data/app/nginx/www
 cp nginx/favicon.ico /data/app/nginx/www
 
 cd nginx
+docker rm -f mynginx
 docker build -t mynginx .
 assert_status
 
