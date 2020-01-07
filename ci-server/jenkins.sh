@@ -23,7 +23,7 @@ gpasswd -a jenkins docker
 mkdir -p /data/app/jenkins
 chown jenkins:docker /data/app/jenkins
 
-cd nginx
+cd jenkins
 docker build -t myjenkins .
 
 docker run -d \
