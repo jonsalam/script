@@ -43,5 +43,5 @@ docker run -d \
   --name jenkins \
   myjenkins
 
-cp jenkins/jenkins.conf /data/app/nginx/
+cp jenkins.conf /data/app/nginx/
 docker exec -it nginx service nginx reload
