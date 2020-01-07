@@ -23,10 +23,6 @@ gpasswd -a jenkins docker
 mkdir -p /data/app/jenkins
 chown jenkins:docker /data/app/jenkins
 
-cd jenkins
-docker rm -f myjenkins
-docker build -t myjenkins .
-
 docker run -d \
   -u root \
   -p 8000:8080 \
@@ -42,7 +38,7 @@ docker run -d \
   --log-opt max-size=10m \
   --log-opt max-file=3 \
   --name jenkins \
-  myjenkins
+  jenkins/jenkins:lts
 
 cp jenkins.conf /data/app/nginx/
 docker exec -it nginx service nginx reload
