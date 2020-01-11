@@ -1,3 +1,0 @@
-promoted-builds:3.2
-mask-passwords
-slack
