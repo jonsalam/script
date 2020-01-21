@@ -294,4 +294,7 @@ verb 3" > client-common.txt
 	echo 'You could execute the following commands manually'
 	echo 'echo "sshd:10.10.1.:allow" >> /etc/hosts.allow'
 	echo 'echo "sshd:ALL" >> /etc/hosts.deny'
+	echo 'firewall-cmd --permanent --zone=public --add-port=80/tcp'
+	echo 'firewall-cmd --add-masquerade --permanent'
+	echo 'firewall-cmd --reload'
 fi
