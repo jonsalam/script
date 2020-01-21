@@ -170,7 +170,7 @@ while true; do
     |jq '.data.jobs[].installStatus' \
     |grep -Eq 'Pending|Installing'
   if [[ $? -eq 1 ]]; then
-    echo 'installed plugins 3/4'
+    echo -e '\ninstalled plugins 3/4'
     break
   else
     echo -n '-'
@@ -227,5 +227,9 @@ curl 'http://jenkins.gffst.cn/setupWizard/configureInstance' -o /dev/null \
   --compressed
 echo 'created admin user 4/4'
 echo 'jenkins install completed'
+echo
+echo "username: admin"
+echo "password: $PASSWORD"
+echo 'please reset the password!!!'
 
 rm -f jenkins/jenkins.cookie
