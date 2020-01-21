@@ -9,6 +9,7 @@ assert_status
 assert_docker_container nginx
 cp nginx/index.html  /data/app/nginx/www
 cp nginx/favicon.ico /data/app/nginx/www
+cp nginx/index.conf  /data/app/nginx/conf
 
 cd nginx
 docker rm -f mynginx
