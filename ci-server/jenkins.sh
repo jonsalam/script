@@ -39,7 +39,7 @@ docker run -d \
   --name jenkins \
   jenkins/jenkins:lts
 
-cp jenkins/jenkins.conf /data/app/nginx/
+cp jenkins/jenkins.conf /data/app/nginx/conf
 docker exec -it nginx service nginx reload
 sleep 1
 
