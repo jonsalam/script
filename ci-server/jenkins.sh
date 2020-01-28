@@ -30,7 +30,8 @@ docker run -d \
   -v /data/app/jenkins:/var/jenkins_home \
   -v /data/app/maven:/root/.m2 \
   -v /usr/share/maven-3:/usr/share/maven-3 \
-  --env PATH=/usr/share/maven-3/bin:/usr/local/openjdk-8/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin \
+  -e PATH=/usr/share/maven-3/bin:/usr/local/openjdk-8/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin \
+  -e JAVA_OPTS=-Duser.timezone=Asia/Shanghai \
   -v /var/run/docker.sock:/var/run/docker.sock \
   -v /usr/bin/docker:/usr/bin/docker \
   --log-driver json-file \
