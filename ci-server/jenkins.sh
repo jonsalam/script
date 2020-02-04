@@ -16,6 +16,11 @@ install docker.sh
 install nginx.sh
 yum install -y jq
 
+grep -q jenkins /etc/passwd
+if [[ $? -eq 1 ]]; then
+  echo 'user: jenkins already exists'
+  exit -1
+fi
 useradd jenkins -U -m
 echo '4URqjiepx' | passwd --stdin jenkins
 gpasswd -a jenkins docker
@@ -39,6 +44,7 @@ docker run -d \
   --log-opt max-file=3 \
   --name jenkins \
   jenkins/jenkins:lts
+assert_status
 
 cp jenkins/jenkins.conf /data/app/nginx/conf
 docker exec -it nginx service nginx reload
