@@ -1,13 +1,15 @@
 #!/bin/bash
 
 # fallback
-# docker rm -f jenkins && rm -rf /data/app/jenkins && rm -f jenkins/jenkins.cookie
+# docker rm -f jenkins && rm -rf /data/app/jenkins && rm -f jenkins/jenkins.cookie && userdel -rf jenkins
 
 source ./init-helper.sh
 assert_docker_container jenkins
 
 EMAIL=jonsalam@163.com
 PASSWORD=V4OKEThXor
+SOURCE_PORT1=8000
+TARGET_PORT1=8080
 
 # requirements
 install java.sh
@@ -17,8 +19,8 @@ install nginx.sh
 yum install -y jq
 
 grep -q jenkins /etc/passwd
-if [[ $? -eq 1 ]]; then
-  echo 'user: jenkins already exists'
+if [[ $? -eq 0 ]]; then
+  echo '>> error: user[jenkins] already exists <<'
   exit -1
 fi
 useradd jenkins -U -m
@@ -29,8 +31,7 @@ chown jenkins:docker /data/app/jenkins
 
 docker run -d \
   -u root \
-  -p 8000:8080 \
-  -p 50000:50000 \
+  -p ${SOURCE_PORT1}:${TARGET_PORT1} \
   --restart=always \
   -v /data/app/jenkins:/var/jenkins_home \
   -v /data/app/maven:/root/.m2 \
@@ -44,7 +45,6 @@ docker run -d \
   --log-opt max-file=3 \
   --name jenkins \
   jenkins/jenkins:lts
-assert_status
 
 cp jenkins/jenkins.conf /data/app/nginx/conf
 docker exec -it nginx service nginx reload
@@ -234,9 +234,19 @@ curl 'http://jenkins.gffst.cn/setupWizard/configureInstance' -o /dev/null \
   --compressed
 echo 'created admin user 4/4'
 echo 'jenkins install completed'
-echo
-echo "username: admin"
-echo "password: $PASSWORD"
-echo 'please reset the password!!!'
+
+docker restart jenkins
+append_final_tip "----jenkins----"
+append_final_tip "username: admin"
+append_final_tip "password: $PASSWORD"
+append_final_tip "please reset the password!!!"
+# close port
+IPTABLE_RULE=$(iptables -L DOCKER -n --line-number|grep $TARGET_PORT1)
+l=$(echo "$IPTABLE_RULE" |awk '{print $1}')
+s=$(echo "$IPTABLE_RULE" |awk '{print $5}')
+d=$(echo "$IPTABLE_RULE" |awk '{print $6}')
+append_final_tip "you may run under commands manually"
+append_final_tip "iptables -R DOCKER $l -p tcp -m tcp -s $s -d $d --dport $TARGET_PORT1 -j REJECT"
+append_final_tip
 
 rm -f jenkins/jenkins.cookie

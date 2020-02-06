@@ -23,7 +23,17 @@ for FILE in $FILES; do
 	echo "--- ${i}/${count} $FILE_NAME installing ---"
 	# execute install shell
 	bash $FILE
-	if [[ $? -eq 0 ]]; then
+	result=$?
+	if [[ $result -eq 0 ]]; then
 		echo "--- $FILE_NAME installed ---"
+	elif [[ $result -eq 255 ]]; then
+		echo ">> error <<<"
+		exit -1
 	fi
 done
+
+if [[ -e final-tips.txt ]]; then
+	echo "--- post actions ---"
+	cat final-tips.txt
+	rm -f final-tips.txt
+fi

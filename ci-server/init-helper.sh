@@ -55,3 +55,7 @@ function while_read_line {
 		fi
 	done
 }
+
+function append_final_tip {
+	echo "$1" >> final-tips.txt
+}
