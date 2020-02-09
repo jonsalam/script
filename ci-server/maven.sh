@@ -34,24 +34,17 @@ echo "--- maven lastest version is $VERSION ---"
 
 mkdir -p /data/app/maven/repository
 chmod 777 /data/app/maven/repository
-cp maven/settings.xml /data/app/maven/
 
 curl -O "http://mirror.bit.edu.cn/apache/maven/maven-3/$VERSION/binaries/apache-maven-$VERSION-bin.tar.gz"
 assert_status
 tar zxf apache-maven-$VERSION-bin.tar.gz
-cp maven/settings.xml apache-maven-$VERSION/conf/settings.xml
-assert_status
 rm -f apache-maven-$VERSION-bin.tar.gz
-assert_status
-check_directory /usr/share/maven-3
-if [[ $? -eq 1 ]]; then
-	rm -rf /usr/share/maven-3
-fi
-mv apache-maven-$VERSION /usr/share/maven-3
-assert_status
-echo 'MAVEN_HOME=/usr/share/maven-3' >> /etc/profile
-assert_status
+rm -rf /usr/local/maven-3
+cp -R apache-maven-$VERSION /usr/local/maven-3
+cp maven/settings.xml /usr/local/maven-3/conf/settings.xml
+echo 'MAVEN_HOME=/usr/local/maven-3' >> /etc/profile
 echo 'PATH=$PATH:$MAVEN_HOME/bin' >> /etc/profile
-assert_status
 source /etc/profile
-assert_status
+
+rm -rf /data/app/maven/maven-3
+mv apache-maven-$VERSION /data/app/maven/maven-3

@@ -34,8 +34,8 @@ docker run -d \
   -p ${SOURCE_PORT1}:${TARGET_PORT1} \
   --restart=always \
   -v /data/app/jenkins:/var/jenkins_home \
-  -v /data/app/maven:/root/.m2 \
-  -v /usr/share/maven-3:/usr/share/maven-3 \
+  -v /data/app/maven/repository:/root/.m2/repository \
+  -v /data/app/maven/maven-3:/usr/share/maven-3 \
   -e PATH=/usr/share/maven-3/bin:/usr/local/openjdk-8/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin \
   -e JAVA_OPTS=-Duser.timezone=Asia/Shanghai \
   -v /var/run/docker.sock:/var/run/docker.sock \
