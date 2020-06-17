@@ -16,11 +16,12 @@ docker rm -f mynginx
 docker build -t mynginx .
 assert_status
 
-docker run -d -P \
+docker run -d \
   --net=host \
   -v /data/app/nginx/www:/usr/share/nginx/html:ro \
   -v /data/app/nginx/conf:/etc/nginx/conf.d:ro \
   -v /data/app/nginx/logs:/var/log/nginx \
+  -v /etc/localtime:/etc/localtime:ro \
   --restart=always \
   --name nginx \
   mynginx
