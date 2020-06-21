@@ -13,6 +13,8 @@ function zsh_plugin {
   fi
 }
 
+yum install -y zsh fontconfig git
+
 chsh -s /bin/zsh
 echo 'yes' |sh -c "$(curl -fsSL https://gitee.com/mirrors/oh-my-zsh/raw/master/tools/install.sh)"
 
@@ -28,10 +30,7 @@ if [[ $? -eq 1 ]]; then
   python get-pip.py
   rm -rf get-pip.py
 fi
-command -v fc-cache
-if [[ $? -eq 1 ]]; then
-  yum install -y fontconfig
-fi
+
 mkdir -p /user/share/fonts
 curl https://gitee.com/mirrors/Powerline/raw/master/font/PowerlineSymbols.otf -o PowerlineSymbols.otf
 mv PowerlineSymbols.otf /user/share/fonts/
