@@ -1,6 +1,6 @@
 #!/bin/bash
 
-yum install -y git net-tools.x86_64 vim tree
+yum install -y git net-tools.x86_64 vim tree jq
 
 if [[ "$(getenforce)" != "Disabled" ]]; then
 	setenforce 0

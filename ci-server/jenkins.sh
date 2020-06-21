@@ -8,8 +8,8 @@ assert_docker_container jenkins
 
 EMAIL=jonsalam@163.com
 PASSWORD=V4OKEThXor
-SOURCE_PORT1=8000
-TARGET_PORT1=8080
+HOST_PORT=8000
+CONTAINER_PORT=8080
 
 # requirements
 install java.sh
@@ -31,7 +31,7 @@ chown jenkins:docker /data/app/jenkins
 
 docker run -d \
   -u root \
-  -p ${SOURCE_PORT1}:${TARGET_PORT1} \
+  -p ${HOST_PORT}:${CONTAINER_PORT} \
   --restart=always \
   -v /data/app/jenkins:/var/jenkins_home \
   -v /data/app/maven/repository:/root/.m2/repository \
@@ -53,7 +53,7 @@ sleep 1
 rm -f jenkins/jenkins.cookie
 echo 'wait completed initialization 1/4'
 while true; do
-  status=$(curl -s -I -o /dev/null -w %{http_code} 'http://jenkins.gffst.cn/' -c jenkins/jenkins.cookie)
+  status=$(curl -s -I -o /dev/null -w %{http_code} "http://localhost:$HOST_PORT/" -c jenkins/jenkins.cookie)
   if [[ $status -eq 403 ]]; then
     break
   else
@@ -62,7 +62,7 @@ while true; do
   fi
 done
 while true; do
-  status=$(curl -s -I -o /dev/null -w %{http_code} 'http://jenkins.gffst.cn/login?from=/')
+  status=$(curl -s -I -o /dev/null -w %{http_code} "http://localhost:$HOST_PORT/login?from=/")
   if [[ $status -eq 200 ]]; then
     echo -e '\ncompleted initialization 1/4'
     break
@@ -76,12 +76,12 @@ cookie=$(sed -n '5p' jenkins/jenkins.cookie)
 key=$(echo $cookie |awk {'print $6'})
 val=$(echo $cookie |awk {'print $7'})
 
-Jenkins_Crumb=$(curl 'http://jenkins.gffst.cn/login?from=/' -s \
-  -H 'Host: jenkins.gffst.cn' \
+Jenkins_Crumb=$(curl "http://localhost:$HOST_PORT/login?from=/" -s \
+  -H "Host: localhost:$HOST_PORT" \
   -H 'Upgrade-Insecure-Requests: 1' \
   -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.117 Safari/537.36' \
   -H 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9' \
-  -H 'Referer: http://jenkins.gffst.cn/' \
+  -H "Referer: http://localhost:$HOST_PORT/" \
   -H 'Accept-Language: zh-CN,zh;q=0.9,en;q=0.8,fr;q=0.7' \
   -H "Cookie: $key=$val" \
   --compressed \
@@ -90,20 +90,20 @@ password=$(cat /data/app/jenkins/secrets/initialAdminPassword)
 
 echo 'input admin password'
 rm -f jenkins/jenkins.cookie
-curl 'http://jenkins.gffst.cn/j_acegi_security_check' -s -i \
+curl "http://localhost:$HOST_PORT/j_acegi_security_check" -s -i \
   -c jenkins/jenkins.cookie \
-  -H 'Host: jenkins.gffst.cn' \
+  -H "Host: localhost:$HOST_PORT" \
   -H 'Cache-Control: max-age=0' \
-  -H 'Origin: http://jenkins.gffst.cn' \
+  -H "Origin: http://localhost:$HOST_PORT" \
   -H 'Upgrade-Insecure-Requests: 1' \
   -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.117 Safari/537.36' \
   -H 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9' \
-  -H 'Referer: http://jenkins.gffst.cn/login?from=%2F' \
+  -H "Referer: http://localhost:$HOST_PORT/login?from=%2F" \
   -H 'Accept-Language: zh-CN,zh;q=0.9,en;q=0.8,fr;q=0.7' \
   -H "Cookie: $key=$val" \
   --data "from=%2F&j_username=admin&j_password=$password&Jenkins-Crumb=$Jenkins_Crumb&json=%7B%22from%22%3A+%22%2F%22%2C+%22j_username%22%3A+%22admin%22%2C+%22j_password%22%3A+%22$password%22%2C+%22%24redact%22%3A+%22j_password%22%2C+%22Jenkins-Crumb%22%3A+%22$Jenkins_Crumb%22%7D" \
   --compressed \
-  | grep -q 'Location: http://jenkins.gffst.cn/loginError'
+  | grep -q "Location: http://localhost:$HOST_PORT/loginError"
 if [[ $? -eq 0 ]]; then
   echo '>>> error: input admin password <<<'
   exit 1
@@ -113,23 +113,23 @@ key=$(echo $cookie |awk {'print $6'})
 val=$(echo $cookie |awk {'print $7'})
 
 echo 'wait security check 2/4'
-Jenkins_Crumb=$(curl 'http://jenkins.gffst.cn/' -s \
-  -H 'Host: jenkins.gffst.cn' \
+Jenkins_Crumb=$(curl "http://localhost:$HOST_PORT/" -s \
+  -H "Host: localhost:$HOST_PORT" \
   -H 'Upgrade-Insecure-Requests: 1' \
   -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.117 Safari/537.36' \
   -H 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9' \
-  -H 'Referer: http://jenkins.gffst.cn/' \
+  -H "Referer: http://localhost:$HOST_PORT/" \
   -H 'Accept-Language: zh-CN,zh;q=0.9,en;q=0.8,fr;q=0.7' \
   -H "Cookie: $key=$val" \
   --compressed \
   | grep -Eo "[a-zA-Z0-9]{64,64}" )
 while true; do
-  curl 'http://jenkins.gffst.cn/updateCenter/connectionStatus?siteId=default' -s \
-    -H 'Host: jenkins.gffst.cn' \
+  curl "http://localhost:$HOST_PORT/updateCenter/connectionStatus?siteId=default" -s \
+    -H "Host: localhost:$HOST_PORT" \
     -H 'Accept: application/json, text/javascript, */*; q=0.01' \
     -H 'X-Requested-With: XMLHttpRequest' \
     -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.117 Safari/537.36' \
-    -H 'Referer: http://jenkins.gffst.cn/' \
+    -H "Referer: http://localhost:$HOST_PORT/" \
     -H 'Accept-Language: zh-CN,zh;q=0.9,en;q=0.8,fr;q=0.7' \
     -H "Cookie: $key=$val" \
     --compressed  \
@@ -145,15 +145,15 @@ while true; do
 done
 
 echo 'wait install plugins 3/4'
-curl 'http://jenkins.gffst.cn/pluginManager/installPlugins' -s \
-  -H 'Host: jenkins.gffst.cn' \
+curl "http://localhost:$HOST_PORT/pluginManager/installPlugins" -s \
+  -H "Host: localhost:$HOST_PORT" \
   -H 'Accept: application/json, text/javascript, */*; q=0.01' \
-  -H 'Origin: http://jenkins.gffst.cn' \
+  -H "Origin: http://localhost:$HOST_PORT" \
   -H 'X-Requested-With: XMLHttpRequest' \
   -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.88 Safari/537.36' \
   -H "Jenkins-Crumb: $Jenkins_Crumb" \
   -H 'Content-Type: application/json' \
-  -H 'Referer: http://jenkins.gffst.cn/' \
+  -H "Referer: http://localhost:$HOST_PORT/" \
   -H 'Accept-Language: zh-CN,zh;q=0.9,en;q=0.8,fr;q=0.7' \
   -H "Cookie: $key=$val" \
   --data-binary "{\"dynamicLoad\":true,\"plugins\":[\"cloudbees-folder\",\"antisamy-markup-formatter\",\"build-timeout\",\"credentials-binding\",\"timestamper\",\"ws-cleanup\",\"git\",\"ssh-slaves\",\"matrix-auth\",\"pam-auth\",\"ldap\",\"email-ext\",\"mailer\",\"localization-zh-cn\"],\"Jenkins-Crumb\":\"$Jenkins_Crumb\"}" \
@@ -165,12 +165,12 @@ if [[ $? -eq 1 ]]; then
   exit 1
 fi
 while true; do
-  curl 'http://jenkins.gffst.cn/updateCenter/installStatus' -s \
-    -H 'Host: jenkins.gffst.cn' \
+  curl "http://localhost:$HOST_PORT/updateCenter/installStatus" -s \
+    -H "Host: localhost:$HOST_PORT" \
     -H 'Accept: application/json, text/javascript, */*; q=0.01' \
     -H 'X-Requested-With: XMLHttpRequest' \
     -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.88 Safari/537.36' \
-    -H 'Referer: http://jenkins.gffst.cn/' \
+    -H "Referer: http://localhost:$HOST_PORT/" \
     -H 'Accept-Language: zh-CN,zh;q=0.9,en;q=0.8,fr;q=0.7' \
     -H "Cookie: $key=$val" \
     --compressed \
@@ -186,26 +186,26 @@ while true; do
 done
 
 echo 'create admin user 4/4'
-Jenkins_Crumb=$(curl 'http://jenkins.gffst.cn/setupWizard/setupWizardFirstUser' -s \
-  -H 'Host: jenkins.gffst.cn' \
+Jenkins_Crumb=$(curl "http://localhost:$HOST_PORT/setupWizard/setupWizardFirstUser" -s \
+  -H "Host: localhost:$HOST_PORT" \
   -H 'Upgrade-Insecure-Requests: 1' \
   -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.117 Safari/537.36' \
   -H 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9' \
-  -H 'Referer: http://jenkins.gffst.cn/' \
+  -H "Referer: http://localhost:$HOST_PORT/" \
   -H 'Accept-Language: zh-CN,zh;q=0.9,en;q=0.8,fr;q=0.7' \
   -H "Cookie: $key=$val" \
   --compressed \
   | grep -Eo "[a-zA-Z0-9]{64,64}" )
 rm -f jenkins/jenkins.cookie
-result=$(curl 'http://jenkins.gffst.cn/setupWizard/createAdminUser' -s \
+result=$(curl "http://localhost:$HOST_PORT/setupWizard/createAdminUser" -s \
   -c jenkins/jenkins.cookie \
-  -H 'Host: jenkins.gffst.cn' \
+  -H "Host: localhost:$HOST_PORT" \
   -H 'Accept: application/json, text/javascript, */*; q=0.01' \
-  -H 'Origin: http://jenkins.gffst.cn' \
+  -H "Origin: http://localhost:$HOST_PORT" \
   -H 'X-Requested-With: XMLHttpRequest' \
   -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.88 Safari/537.36' \
   -H "Jenkins-Crumb: $Jenkins_Crumb" \
-  -H 'Referer: http://jenkins.gffst.cn/' \
+  -H "Referer: http://localhost:$HOST_PORT/" \
   -H 'Accept-Language: zh-CN,zh;q=0.9,en;q=0.8,fr;q=0.7' \
   -H "Cookie: $key=$val" \
   --data "username=admin&password1=$PASSWORD&password2=$PASSWORD&fullname=&email=$EMAIL&Jenkins-Crumb=$Jenkins_Crumb&json={\"username\":\"admin\",\"password1\":\"$PASSWORD\",\"$redact\":[\"password1\",\"password2\"],\"password2\":\"$PASSWORD\",\"fullname\":\"\",\"email\":\"$EMAIL\",\"Jenkins-Crumb\":\"$Jenkins_Crumb\"}&core:apply=&Submit=Save" \
@@ -220,17 +220,17 @@ key=$(echo $cookie |awk {'print $6'})
 val=$(echo $cookie |awk {'print $7'})
 Jenkins_Crumb=$(echo $result |jq -r '.data.crumb')
 sleep 1
-curl 'http://jenkins.gffst.cn/setupWizard/configureInstance' -o /dev/null \
-  -H 'Host: jenkins.gffst.cn' \
+curl "http://localhost:$HOST_PORT/setupWizard/configureInstance" -o /dev/null \
+  -H "Host: localhost:$HOST_PORT" \
   -H 'Accept: application/json, text/javascript, */*; q=0.01' \
-  -H 'Origin: http://jenkins.gffst.cn' \
+  -H "Origin: http://localhost:$HOST_PORT" \
   -H 'X-Requested-With: XMLHttpRequest' \
   -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.88 Safari/537.36' \
   -H "Jenkins-Crumb: $Jenkins_Crumb" \
-  -H 'Referer: http://jenkins.gffst.cn/' \
+  -H "Referer: http://localhost:$HOST_PORT/" \
   -H 'Accept-Language: zh-CN,zh;q=0.9,en;q=0.8,fr;q=0.7' \
   -H "Cookie: $key=$val" \
-  --data "rootUrl=http://jenkins.gffst.cn/&Jenkins-Crumb=$Jenkins_Crumb&json={\"rootUrl\":\"http://jenkins.gffst.cn/\",\"Jenkins-Crumb\":\"$Jenkins_Crumb\"}" \
+  --data "rootUrl=http://localhost:$HOST_PORT/&Jenkins-Crumb=$Jenkins_Crumb&json={\"rootUrl\":\"http://localhost:$HOST_PORT/\",\"Jenkins-Crumb\":\"$Jenkins_Crumb\"}" \
   --compressed
 echo 'created admin user 4/4'
 echo 'jenkins install completed'
@@ -241,12 +241,12 @@ append_final_tip "username: admin"
 append_final_tip "password: $PASSWORD"
 append_final_tip "please reset the password!!!"
 # close port
-IPTABLE_RULE=$(iptables -L DOCKER -n --line-number|grep $TARGET_PORT1)
+IPTABLE_RULE=$(iptables -L DOCKER -n --line-number|grep $CONTAINER_PORT)
 l=$(echo "$IPTABLE_RULE" |awk '{print $1}')
 s=$(echo "$IPTABLE_RULE" |awk '{print $5}')
 d=$(echo "$IPTABLE_RULE" |awk '{print $6}')
 append_final_tip "you may run under commands manually"
-append_final_tip "iptables -R DOCKER $l -p tcp -m tcp -s $s -d $d --dport $TARGET_PORT1 -j REJECT"
+append_final_tip "iptables -R DOCKER $l -p tcp -m tcp -s $s -d $d --dport $CONTAINER_PORT -j REJECT"
 append_final_tip
 
 rm -f jenkins/jenkins.cookie
