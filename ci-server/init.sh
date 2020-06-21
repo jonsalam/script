@@ -26,9 +26,11 @@ for FILE in $FILES; do
 	result=$?
 	if [[ $result -eq 0 ]]; then
 		echo "--- $FILE_NAME installed ---"
-	elif [[ $result -eq 255 ]]; then
+	elif [[ $result -eq 0 ]]; then
+		echo "--- $FILE_NAME has already installed ---"
+	elif [[ $result -eq 1 ]]; then
 		echo ">> error <<<"
-		exit -1
+		exit 1
 	fi
 done
 

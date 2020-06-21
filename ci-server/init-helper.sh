@@ -5,14 +5,14 @@ function assert_command_exist {
 	if command -v $1 > /dev/null; then
 		echo "$1 has already been installed"
 		$1 $2
-		exit 100
+		exit 2
 	fi
 }
 
 function assert_status {
     if [[ $? -ne 0 ]]; then
 		echo ">>> error <<<"
-        exit -1
+        exit 1
     fi
 }
 
@@ -24,17 +24,17 @@ function assert_docker_container {
 			docker start $1
 			assert_status
 		fi
-		exit 100
+		exit 2
 	fi
 }
 
 function install {
 	bash $1
 	STATUS=$?
-	if [[ $STATUS -eq 100 ]]; then
-		return 100
+	if [[ $STATUS -eq 2 ]]; then
+		return 2
 	elif [[ $STATUS -ne 0 ]]; then
-		exit -1
+		exit 1
 	fi
 }
 

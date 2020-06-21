@@ -21,7 +21,7 @@ yum install -y jq
 grep -q jenkins /etc/passwd
 if [[ $? -eq 0 ]]; then
   echo '>> error: user[jenkins] already exists <<'
-  exit -1
+  exit 1
 fi
 useradd jenkins -U -m
 echo '4URqjiepx' | passwd --stdin jenkins
@@ -106,7 +106,7 @@ curl 'http://jenkins.gffst.cn/j_acegi_security_check' -s -i \
   | grep -q 'Location: http://jenkins.gffst.cn/loginError'
 if [[ $? -eq 0 ]]; then
   echo '>>> error: input admin password <<<'
-  exit -1
+  exit 1
 fi
 cookie=$(sed -n '5p' jenkins/jenkins.cookie)
 key=$(echo $cookie |awk {'print $6'})
@@ -162,7 +162,7 @@ curl 'http://jenkins.gffst.cn/pluginManager/installPlugins' -s \
   | grep -q 'ok'
 if [[ $? -eq 1 ]]; then
   echo '>>> error <<<'
-  exit -1
+  exit 1
 fi
 while true; do
   curl 'http://jenkins.gffst.cn/updateCenter/installStatus' -s \
@@ -213,7 +213,7 @@ result=$(curl 'http://jenkins.gffst.cn/setupWizard/createAdminUser' -s \
 echo $result |jq '.status' |grep 'ok'
 if [[ $? -eq 1 ]]; then
   echo ">>> error: $result <<<"
-  exit -1
+  exit 1
 fi
 cookie=$(sed -n '5p' jenkins/jenkins.cookie)
 key=$(echo $cookie |awk {'print $6'})
