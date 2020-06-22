@@ -123,14 +123,6 @@ systemctl daemon-reload
 systemctl restart docker
 systemctl enable docker
 
-docker_pull kubeimage/kube-apiserver-amd64          k8s.gcr.io/kube-apiserver
-docker_pull kubeimage/kube-controller-manager-amd64 k8s.gcr.io/kube-controller-manager
-docker_pull kubeimage/kube-scheduler-amd64          k8s.gcr.io/kube-scheduler
-docker_pull kubeimage/kube-proxy-amd64              k8s.gcr.io/kube-proxy
-aliyun_docker_pull k8s.gcr.io/pause
-aliyun_docker_pull k8s.gcr.io/etcd
-aliyun_docker_pull k8s.gcr.io/coredns
-
 echo '===='
 echo '安装kubelet'
 cat <<EOF > /etc/yum.repos.d/kubernetes.repo
@@ -144,6 +136,13 @@ gpgkey=http://mirrors.aliyun.com/kubernetes/yum/doc/yum-key.gpg
        http://mirrors.aliyun.com/kubernetes/yum/doc/rpm-package-key.gpg
 EOF
 yum install -y kubelet kubeadm kubectl
+docker_pull kubeimage/kube-apiserver-amd64          k8s.gcr.io/kube-apiserver
+docker_pull kubeimage/kube-controller-manager-amd64 k8s.gcr.io/kube-controller-manager
+docker_pull kubeimage/kube-scheduler-amd64          k8s.gcr.io/kube-scheduler
+docker_pull kubeimage/kube-proxy-amd64              k8s.gcr.io/kube-proxy
+aliyun_docker_pull k8s.gcr.io/pause
+aliyun_docker_pull k8s.gcr.io/etcd
+aliyun_docker_pull k8s.gcr.io/coredns
 systemctl enable kubelet
 systemctl start kubelet
 
