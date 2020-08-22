@@ -2,7 +2,7 @@
 
 RED=$(printf '\033[31m')
 YELLOW=$(printf '\033[33m')
-GREEN=$(printf '\033[32m')
+BLUE=$(printf '\033[34m')
 RESET=$(printf '\033[m')
 echo_error() {
   echo "${RED}error: $*${RESET}" >&2
@@ -11,11 +11,7 @@ echo_warn() {
   echo "${YELLOW}warn: $*${RESET}" >&2
 }
 echo_info() {
-  echo "${GREEN}info: $*${RESET}" >&2
-}
-
-command_exists() {
-  command -v "$*" >/dev/null 2>&1
+  echo "${BLUE}info: $*${RESET}" >&2
 }
 
 # https://www.cnblogs.com/daodaotest/p/12635957.html
@@ -45,10 +41,10 @@ change_brew_git() {
 
   case $SHELL in
   '/bin/bash')
-    warn "请手动执行命令'source ~/.bash_profile'"
+    echo_warn "请手动执行命令'source ~/.bash_profile'"
     ;;
   '/bin/zsh')
-    warn "请手动执行命令'source ~/.zshrc'"
+    echo_warn "请手动执行命令'source ~/.zshrc'"
     ;;
   esac
 }
